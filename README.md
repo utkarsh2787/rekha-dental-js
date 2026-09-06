@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Rekha Dental — Next.js website
 
-## Getting Started
+A clean, developer-maintained rebuild of the Rekha Dental public website. It uses Next.js App Router, TypeScript and Tailwind CSS, with local images selected from the verified website mirror.
 
-First, run the development server:
+## Requirements
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
+- Node.js 20.9 or newer
+- pnpm 11 or newer
+
+## Run locally
+
+```powershell
+Copy-Item .env.example .env.local
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Quality checks
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```powershell
+pnpm lint
+pnpm build
+```
 
-## Learn More
+The application statically generates every public route from the captured website. The contact endpoint remains dynamic so it can validate and deliver enquiries at request time.
 
-To learn more about Next.js, take a look at the following resources:
+## Where developers edit content
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `config/site.ts` — phone, email, address, canonical base URL and Calendly URL.
+- `content/home.ts` — homepage treatments, clinicians, statistics, principles and selected reviews.
+- `content/pages.ts` — treatment pages, courses, articles, locations, patient information and legal content.
+- `public/images` — locally hosted clinic, clinician and treatment imagery.
+- `components` — shared layouts and interactive controls.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Environment settings
 
-## Deploy on Vercel
+- `NEXT_PUBLIC_SITE_URL` — canonical production origin, without a trailing slash.
+- `NEXT_PUBLIC_CALENDLY_URL` — the one clinic-wide Calendly event URL.
+- `CONTACT_WEBHOOK_URL` — optional server-side delivery endpoint for validated contact enquiries.
+- `CONTACT_EMAIL_TO` — documented destination for the future email adapter.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The form intentionally returns a clear unavailable message when no delivery endpoint exists. It never displays a false success message.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Project documents
+
+- `docs/PRD.md` — confirmed scope and acceptance criteria.
+- `docs/ARCHITECTURE.md` — content, rendering, asset and integration decisions.
+
+Deployment is intentionally excluded from this phase. Hosting, DNS, analytics and production secrets will be handled after local approval.
