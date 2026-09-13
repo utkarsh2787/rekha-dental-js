@@ -15,16 +15,15 @@ export const siteConfig = {
       name: "Rekha Dental — Kotgaon",
       streetAddress: "House No 622, First Floor, Satyam Enclave, New Kotgaon, Opp Rakesh Marg, Kotgaon Village, Daulatpura",
       postalCode: "201001",
+      calendlyUrl: "https://calendly.com/rekhadentalkotgaon/20min",
     },
     {
       name: "Rekha Dental — Raj Nagar Extension",
       streetAddress: "A-007 Raj Nagar Residency, Near KW Delhi 6 Mall, Ghukna, Vikas Nagar, Raj Nagar Extension",
       postalCode: "201017",
+      calendlyUrl: "https://calendly.com/rekhadentalrajnagar/20min",
     },
   ],
-  calendlyUrl:
-    process.env.NEXT_PUBLIC_CALENDLY_URL ??
-    "https://calendly.com/rekha-dental/consultation",
 } as const;
 
 export const primaryNavigation = [

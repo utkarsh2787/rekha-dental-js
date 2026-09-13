@@ -22,6 +22,8 @@ export function CalendlyButton({
   iconStyle = "outline",
 }: CalendlyButtonProps) {
   const [open, setOpen] = useState(false);
+  const [locationIndex, setLocationIndex] = useState(0);
+  const selectedLocation = siteConfig.locations[locationIndex];
 
   useEffect(() => {
     if (!open) return;
@@ -57,7 +59,7 @@ export function CalendlyButton({
             if (event.currentTarget === event.target) setOpen(false);
           }}
         >
-          <div className="relative h-[88vh] w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-2xl">
+          <div className="relative flex h-[88vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
             <button
               type="button"
               onClick={() => setOpen(false)}
@@ -66,10 +68,23 @@ export function CalendlyButton({
             >
               <X aria-hidden="true" size={20} />
             </button>
+            <div className="flex shrink-0 gap-2 border-b border-black/10 px-4 pb-3 pt-4 sm:px-6">
+              {siteConfig.locations.map((location, index) => (
+                <button
+                  key={location.name}
+                  type="button"
+                  onClick={() => setLocationIndex(index)}
+                  className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition sm:text-sm ${index === locationIndex ? "border-[#16412d] bg-[#16412d] text-white" : "border-[#D8CEC0] text-[#2C2C2C] hover:border-[#16412d]"}`}
+                >
+                  {location.name.replace("Rekha Dental — ", "")}
+                </button>
+              ))}
+            </div>
             <iframe
-              title="Schedule an appointment with Rekha Dental"
-              src={siteConfig.calendlyUrl}
-              className="h-full w-full border-0"
+              key={selectedLocation.calendlyUrl}
+              title={`Schedule an appointment at ${selectedLocation.name}`}
+              src={selectedLocation.calendlyUrl}
+              className="w-full flex-1 border-0"
               allow="fullscreen"
             />
           </div>
