@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type GalleryCategory = "facility" | "technology" | "smiles" | "events";
 type GalleryFilter = "all" | GalleryCategory;
@@ -11,39 +11,6 @@ type GalleryItem = {
   category: GalleryCategory;
   image: string;
 };
-
-const galleryItems: GalleryItem[] = [
-  { image: "/images/gallery/gallery-01.jpeg", alt: "Rekha Dental reception area", category: "facility" },
-  { image: "/images/gallery/gallery-02.jpeg", alt: "Aligner", category: "facility" },
-  { image: "/images/gallery/gallery-03.jpeg", alt: "Rekha Dental Team", category: "facility" },
-  { image: "/images/gallery/gallery-04.jpeg", alt: "Implant", category: "facility" },
-  { image: "/images/gallery/gallery-05.jpeg", alt: "Kotgaon Clinic", category: "facility" },
-  { image: "/images/gallery/gallery-06.jpeg", alt: "Clinical Area", category: "facility" },
-  { image: "/images/gallery/gallery-07.jpeg", alt: "Consultation Room", category: "facility" },
-  { image: "/images/gallery/gallery-08.jpeg", alt: "Reception", category: "facility" },
-  { image: "/images/gallery/gallery-09.jpeg", alt: "Scanner", category: "technology" },
-  { image: "/images/gallery/gallery-10.jpeg", alt: "Modern dental instruments setup", category: "technology" },
-  { image: "/images/gallery/gallery-11.jpeg", alt: "10x Sterilization ", category: "technology" },
-  { image: "/images/gallery/gallery-12.jpeg", alt: "Scanner", category: "technology" },
-  { image: "/images/gallery/gallery-13.jpeg", alt: "Happy Patient", category: "smiles" },
-  { image: "/images/gallery/gallery-14.jpeg", alt: "Patient smile transformation", category: "smiles" },
-  { image: "/images/gallery/gallery-15.jpeg", alt: "Confident patient after treatment", category: "smiles" },
-  { image: "/images/gallery/gallery-16.jpeg", alt: "Clinical Discussion", category: "smiles" },
-  { image: "/images/gallery/gallery-17.jpeg", alt: "Happy Patient", category: "smiles" },
-  { image: "/images/gallery/gallery-18.jpeg", alt: "Smiles", category: "smiles" },
-  { image: "/images/gallery/gallery-19.jpeg", alt: "Happy Patient", category: "smiles" },
-  { image: "/images/gallery/gallery-20.jpeg", alt: "Little Smile", category: "smiles" },
-  { image: "/images/gallery/gallery-21.jpeg", alt: "Little Smiles", category: "smiles" },
-  { image: "/images/gallery/gallery-22.jpeg", alt: "Beautiful smile makeover result", category: "smiles" },
-  { image: "/images/gallery/gallery-23.jpeg", alt: "Little Smiles", category: "smiles" },
-  { image: "/images/gallery/gallery-24.jpeg", alt: "Clinic celebration moment", category: "events" },
-  { image: "/images/gallery/gallery-25.jpeg", alt: "Professional dental seminar", category: "events" },
-  { image: "/images/gallery/gallery-26.jpeg", alt: "Certification", category: "events" },
-  { image: "/images/gallery/gallery-27.jpeg", alt: "Participation in event", category: "events" },
-  { image: "/images/gallery/gallery-28.jpeg", alt: "Certification", category: "events" },
-  { image: "/images/gallery/gallery-29.jpeg", alt: "Events", category: "events" },
-  { image: "/images/gallery/gallery-30.jpeg", alt: "Events", category: "events" },
-];
 
 const filters: Array<{ label: string; value: GalleryFilter }> = [
   { label: "All", value: "all" },
@@ -79,11 +46,30 @@ function GalleryCard({ item, desktop = false }: { item: GalleryItem; desktop?: b
   );
 }
 
+type CloudinaryImage = { publicId: string; url: string; alt: string; category: GalleryCategory };
+
 export function GalleryPage() {
   const [activeFilter, setActiveFilter] = useState<GalleryFilter>("all");
+  const [items, setItems] = useState<GalleryItem[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/gallery")
+      .then((response) => (response.ok ? response.json() : { images: [] }))
+      .then((body: { images?: CloudinaryImage[] }) => {
+        if (cancelled) return;
+        const mapped = (body.images ?? []).map((image) => ({ image: image.url, alt: image.alt, category: image.category }));
+        setItems(mapped);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const visibleItems = useMemo(
-    () => activeFilter === "all" ? galleryItems : galleryItems.filter((item) => item.category === activeFilter),
-    [activeFilter],
+    () => activeFilter === "all" ? items : items.filter((item) => item.category === activeFilter),
+    [activeFilter, items],
   );
   const rows = useMemo(() => {
     const result: GalleryItem[][] = [];
