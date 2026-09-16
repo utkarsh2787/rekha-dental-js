@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { GoogleTagManager } from "@next/third-parties/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import { SiteFooter } from "@/components/site-footer";
@@ -77,7 +78,16 @@ const dentalClinicSchema = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${geist.variable} ${playfair.variable} ${cormorant.variable}`}>
+      <GoogleTagManager gtmId="GTM-KTNWLB8N" />
       <body>
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-KTNWLB8N"
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+          />
+        </noscript>
         <SiteHeader />
         <main>{children}</main>
         <SiteFooter />
