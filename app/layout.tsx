@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { GoogleTagManager } from "@next/third-parties/google";
+import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import { SiteFooter } from "@/components/site-footer";
@@ -79,6 +79,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${geist.variable} ${playfair.variable} ${cormorant.variable}`}>
       <GoogleTagManager gtmId="GTM-KTNWLB8N" />
+      <GoogleAnalytics gaId="AW-16480953959" />
       <body>
         <noscript>
           <iframe
