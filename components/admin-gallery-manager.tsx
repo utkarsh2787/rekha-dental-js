@@ -2,7 +2,9 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+
+const LONG_PRESS_MS = 450;
 
 type GalleryCategory = "facility" | "technology" | "smiles" | "events";
 type GalleryTab = "all" | GalleryCategory;
@@ -40,6 +42,33 @@ export function AdminGalleryManager() {
   const [uploading, setUploading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [movingId, setMovingId] = useState<string | null>(null);
+  const [activeCardId, setActiveCardId] = useState<string | null>(null);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const justLongPressed = useRef(false);
+
+  const clearLongPressTimer = () => {
+    if (longPressTimer.current !== null) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  const onCardTouchStart = (publicId: string) => {
+    clearLongPressTimer();
+    longPressTimer.current = setTimeout(() => {
+      setActiveCardId(publicId);
+      justLongPressed.current = true;
+      if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(15);
+    }, LONG_PRESS_MS);
+  };
+
+  const onCardTap = () => {
+    if (justLongPressed.current) {
+      justLongPressed.current = false;
+      return;
+    }
+    setActiveCardId((current) => (current === null ? current : null));
+  };
 
   const loadImages = async () => {
     try {
@@ -54,6 +83,8 @@ export function AdminGalleryManager() {
       setLoading(false);
     }
   };
+
+  useEffect(() => () => clearLongPressTimer(), []);
 
   useEffect(() => {
     fetch("/api/gallery", { cache: "no-store" })
@@ -234,42 +265,62 @@ export function AdminGalleryManager() {
         <p className="text-sm text-[#555]">No images in this category yet.</p>
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-          {visibleImages.map((image, index) => (
-            <div key={image.publicId} className="group relative aspect-square overflow-hidden rounded-lg border border-[#D8CEC0]">
-              <Image src={image.url} alt={image.alt} fill sizes="200px" className="object-cover" />
-              <div className="absolute inset-x-0 bottom-0 bg-black/60 p-2">
-                <p className="truncate text-[10px] text-white">{image.category}</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => onDelete(image.publicId)}
-                disabled={deletingId === image.publicId}
-                className="absolute right-1.5 top-1.5 rounded-full bg-black/70 px-2 py-1 text-[10px] font-semibold text-white opacity-0 transition group-hover:opacity-100 disabled:opacity-100"
+          {visibleImages.map((image, index) => {
+            const controlsVisible = activeCardId === image.publicId;
+            return (
+              <div
+                key={image.publicId}
+                className="group relative aspect-square overflow-hidden rounded-lg border border-[#D8CEC0]"
+                onTouchStart={() => onCardTouchStart(image.publicId)}
+                onTouchEnd={clearLongPressTimer}
+                onTouchMove={clearLongPressTimer}
+                onTouchCancel={clearLongPressTimer}
+                onClick={onCardTap}
               >
-                {deletingId === image.publicId ? "..." : "Delete"}
-              </button>
-              <div className="absolute left-1.5 top-1.5 flex gap-1 opacity-0 transition group-hover:opacity-100">
+                <Image src={image.url} alt={image.alt} fill sizes="200px" className="object-cover" />
+                <div className="absolute inset-x-0 bottom-0 bg-black/60 p-2">
+                  <p className="truncate text-[10px] text-white">{image.category}</p>
+                </div>
                 <button
                   type="button"
-                  onClick={() => onMove(index, "left")}
-                  disabled={index === 0 || movingId !== null}
-                  aria-label="Move earlier"
-                  className="grid size-6 place-items-center rounded-full bg-black/70 text-xs font-semibold text-white disabled:opacity-40"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onDelete(image.publicId);
+                  }}
+                  disabled={deletingId === image.publicId}
+                  className={`absolute right-1.5 top-1.5 rounded-full bg-black/70 px-2 py-1 text-[10px] font-semibold text-white transition disabled:opacity-100 ${controlsVisible ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
                 >
-                  ←
+                  {deletingId === image.publicId ? "..." : "Delete"}
                 </button>
-                <button
-                  type="button"
-                  onClick={() => onMove(index, "right")}
-                  disabled={index === visibleImages.length - 1 || movingId !== null}
-                  aria-label="Move later"
-                  className="grid size-6 place-items-center rounded-full bg-black/70 text-xs font-semibold text-white disabled:opacity-40"
-                >
-                  →
-                </button>
+                <div className={`absolute left-1.5 top-1.5 flex gap-1 transition ${controlsVisible ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onMove(index, "left");
+                    }}
+                    disabled={index === 0 || movingId !== null}
+                    aria-label="Move earlier"
+                    className="grid size-6 place-items-center rounded-full bg-black/70 text-xs font-semibold text-white disabled:opacity-40"
+                  >
+                    ←
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onMove(index, "right");
+                    }}
+                    disabled={index === visibleImages.length - 1 || movingId !== null}
+                    aria-label="Move later"
+                    className="grid size-6 place-items-center rounded-full bg-black/70 text-xs font-semibold text-white disabled:opacity-40"
+                  >
+                    →
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
