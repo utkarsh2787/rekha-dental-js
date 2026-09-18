@@ -1,7 +1,7 @@
 "use client";
 
 import { Mail, MessageCircle, Upload, X } from "lucide-react";
-import { useMemo, useState, type ChangeEvent, type FormEvent } from "react";
+import { useMemo, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { siteConfig } from "@/config/site";
 
 const MAX_PHOTOS = 3;
@@ -20,6 +20,11 @@ export function ConsultationRequestForm() {
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [locationIndex, setLocationIndex] = useState(0);
+  const photoFieldRef = useRef<HTMLLabelElement>(null);
+
+  const scrollToPhotoField = () => {
+    photoFieldRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
 
   const photoPreviews = useMemo(() => photos.map((photo) => URL.createObjectURL(photo)), [photos]);
 
@@ -108,11 +113,15 @@ export function ConsultationRequestForm() {
       <div className="mb-8">
         <p className="mb-3 text-center text-xs font-semibold uppercase tracking-[1.5px] text-[#555]">3 ways to send your photos</p>
         <div className="grid gap-3 sm:grid-cols-3">
-          <div className="flex flex-col items-center gap-2 rounded-xl border-2 border-[#16412d] bg-[#16412d]/5 p-4 text-center">
+          <button
+            type="button"
+            onClick={scrollToPhotoField}
+            className="flex flex-col items-center gap-2 rounded-xl border-2 border-[#16412d] bg-[#16412d]/5 p-4 text-center transition hover:bg-[#16412d]/10"
+          >
             <Upload aria-hidden="true" size={22} className="text-[#16412d]" />
             <p className="text-sm font-semibold text-[#16412d]">Upload here</p>
             <p className="text-xs text-[#555]">Use the form below</p>
-          </div>
+          </button>
           <a
             href={`${siteConfig.whatsappHref}?text=${WHATSAPP_MESSAGE}`}
             target="_blank"
@@ -150,7 +159,7 @@ export function ConsultationRequestForm() {
           <textarea rows={4} value={concern} onChange={(event) => setConcern(event.target.value)} placeholder="Tell us what you'd like help with" className="w-full resize-none rounded-2xl border border-[#ddd3c8] bg-white px-5 py-4 text-[15px] font-normal outline-none transition focus:border-[#16412d] focus:ring-4 focus:ring-[#16412d]/10" />
         </Field>
 
-        <label className="block space-y-2 text-sm font-medium text-[#16412d]">
+        <label ref={photoFieldRef} className="block space-y-2 text-sm font-medium text-[#16412d]">
           Photos (up to {MAX_PHOTOS})
           <div className="flex flex-wrap items-center gap-3">
             {photos.map((photo, index) => (
