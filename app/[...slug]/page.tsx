@@ -4,7 +4,8 @@ import { ContentPageView } from "@/components/content-page";
 import { allContentPages, pageByPath } from "@/content/pages";
 import { siteConfig } from "@/config/site";
 import { treatmentDetailsBySlug } from "@/content/treatment-details";
-import { blogListingMetadata, blogPostByPath } from "@/content/blogs";
+import { blogListingMetadata } from "@/content/blogs";
+import { getBlogContentPage, getBlogPostByPath } from "@/lib/blogs";
 
 type Props = { params: Promise<{ slug: string[] }> };
 
@@ -28,7 +29,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const path = (await params).slug.join("/");
-  const page = pageByPath.get(path);
+  const page = pageByPath.get(path) ?? await getBlogContentPage(path);
   if (!page) return {};
   if (["appointment/ghaziabad", "best-dentist-near-me", "post-treatment-care"].includes(path)) return {
     title: { absolute: "Best Dental Clinic in Ghaziabad | Dental Implants, RCT & Smile Makeover | Rekha Dental" },
@@ -49,7 +50,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const canonical = `/${page.path}`;
   const image = page.heroImage ?? page.image ?? "/images/hero-01.png";
   const treatmentDetail = page.kind === "treatment" ? treatmentDetailsBySlug.get(path.split("/").at(-1) ?? "") : undefined;
-  const blogPost = page.kind === "article" ? blogPostByPath.get(path) : undefined;
+  const blogPost = page.kind === "article" ? await getBlogPostByPath(path) : undefined;
   const metadataTitle = page.path === "about"
     ? "About Rekha Dental | Best Dental Clinic in Ghaziabad"
     : page.path === "treatments"
@@ -92,7 +93,7 @@ export default async function CatchAllPage({ params }: Props) {
   const path = (await params).slug.join("/");
   if (["appointment/ghaziabad", "best-dentist-near-me", "post-treatment-care"].includes(path)) notFound();
   if (path === "appointment/raj-nagar") redirect("/dentist-near-me/raj-nagar");
-  const page = pageByPath.get(path);
+  const page = pageByPath.get(path) ?? await getBlogContentPage(path);
   if (!page) notFound();
 
   const breadcrumbs = path.split("/");

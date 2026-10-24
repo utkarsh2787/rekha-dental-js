@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { AdminNav } from "@/components/admin-nav";
 
 type GalleryCategory = "facility" | "technology" | "smiles" | "events";
 type GalleryTab = "all" | GalleryCategory;
@@ -157,7 +158,10 @@ export function AdminGalleryManager() {
   return (
     <div className="mx-auto max-w-5xl px-6 py-10">
       <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-[#2c2c2c]">Gallery Admin</h1>
+        <div className="flex flex-col gap-3">
+          <h1 className="text-2xl font-semibold text-[#2c2c2c]">Gallery Admin</h1>
+          <AdminNav active="/admin" />
+        </div>
         <button
           type="button"
           onClick={onLogout}

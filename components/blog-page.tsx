@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { blogPosts } from "@/content/blogs";
+import { getAllBlogPosts } from "@/lib/blogs";
 
 function ReadingTimeIcon({ className = "" }: { className?: string }) {
   return (
@@ -11,7 +11,8 @@ function ReadingTimeIcon({ className = "" }: { className?: string }) {
   );
 }
 
-export function BlogPage() {
+export async function BlogPage() {
+  const blogPosts = await getAllBlogPosts();
   return (
     <div className="blogs-page flex min-h-screen flex-col bg-[#EAE4DB]">
       <section className="min-h-screen px-4 py-10">

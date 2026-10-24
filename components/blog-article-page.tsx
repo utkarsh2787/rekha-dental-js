@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { blogPostByPath } from "@/content/blogs";
+import { getBlogPostByPath } from "@/lib/blogs";
 
 function DateIcon() {
   return (
@@ -18,8 +18,8 @@ function ReadingTimeIcon() {
   );
 }
 
-export function BlogArticlePage({ path }: { path: string }) {
-  const post = blogPostByPath.get(path);
+export async function BlogArticlePage({ path }: { path: string }) {
+  const post = await getBlogPostByPath(path);
   if (!post) return null;
 
   return (
