@@ -63,7 +63,6 @@ function TreatmentCards() {
           <p className="text-[11px] font-extrabold uppercase tracking-wide text-[#b89b5e]">Starts from*</p>
           <div className="flex items-center gap-2 whitespace-nowrap">
             <p className="text-xl font-bold text-[#16412d]">₹{item.currentPrice}</p>
-            <p className="text-sm text-gray-400 line-through">₹{item.previousPrice}</p>
           </div>
         </div>
         <CalendlyButton variant="header" label="Book Appointment" compactLabel="Book" className="shrink-0" />

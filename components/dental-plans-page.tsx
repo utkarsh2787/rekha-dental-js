@@ -68,7 +68,6 @@ function MembershipPlans() {
             <h3 className="mt-3 text-3xl font-semibold text-[#21282C]">₹{plan.price}</h3>
           </div>
         </div>
-        <div className="mt-2 flex items-center gap-2 text-sm"><span className="text-gray-400 line-through">₹{plan.originalPrice}</span><span className="font-semibold text-emerald-600">Save ₹{plan.savings}</span></div>
         <p className="mt-4 min-h-12 text-sm leading-relaxed text-[#666]">{plan.description}</p>
         <div className="my-6 h-px bg-[#ECE7DF]"/>
         <ul className="flex-1 space-y-4">
@@ -85,14 +84,14 @@ function MembershipPlans() {
   </div>;
 }
 
-function ExclusiveOffers() {
+function TreatmentPrices() {
   return <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-6 pb-24 md:grid-cols-2 lg:grid-cols-4">
     {dentalOffers.map((offer) => <Link key={offer.title} href={offer.href} className="group cursor-pointer rounded-3xl border border-[#E8DED0] bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
       <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-[#F8F3EA] text-[#CBA553]"><Icon name={offer.icon} className="h-7 w-7"/></div>
       <h3 className="min-h-14 text-center text-xl font-semibold leading-tight text-[#163B2F]">{offer.title}</h3>
       <div className="my-5 border-t border-dashed border-[#D8CEC0]"/>
       <div className="text-center">
-        {offer.value.includes("%") ? <><p className="mb-1 text-sm uppercase tracking-[2px] text-gray-500">Up To</p><p className="font-serif text-4xl font-medium text-[#CBA553]">{offer.value}</p></> : <p className="text-4xl font-semibold text-[#163B2F]">{offer.value}</p>}
+        <p className="text-4xl font-semibold text-[#163B2F]">{offer.value}</p>
         {"note" in offer ? <p className="mt-4 text-sm leading-relaxed text-gray-500">{offer.note}</p> : null}
       </div>
     </Link>)}
@@ -133,14 +132,14 @@ function Faqs() {
 }
 
 export function DentalPlansPage() {
-  const [tab, setTab] = useState<"plans" | "offers">("plans");
+  const [tab, setTab] = useState<"plans" | "prices">("plans");
   return <div className="dental-plans-page flow-root bg-[#EAE4DB] pt-10 text-[#21282C]">
-    <SectionHeading eyebrow="DENTAL HEALTH PLANS AND OFFERS" title="Smart savings. Better oral health." subtitle="Choose a membership plan and explore offers with exclusive benefits, discounts, and priority dental care."/>
+    <SectionHeading eyebrow="DENTAL HEALTH PLANS AND PRICES" title="Clear pricing. Better oral health." subtitle="Choose a membership plan and view the starting prices of our treatments."/>
     <div className="flex items-center justify-center gap-3" role="tablist" aria-label="Dental plan options">
       <button type="button" role="tab" aria-selected={tab === "plans"} onClick={() => setTab("plans")} className={`relative overflow-hidden border px-4 py-1.5 text-xs uppercase tracking-[1.5px] transition-colors duration-200 hover:cursor-pointer lg:px-6 lg:py-3 lg:text-sm ${tab === "plans" ? "border-[#16412d] bg-[#16412d] text-white" : "border-[#D8CEC0] text-[#2C2C2C] hover:border-[#16412d] hover:text-[#16412d]"}`}>Membership Plans</button>
-      <button type="button" role="tab" aria-selected={tab === "offers"} onClick={() => setTab("offers")} className={`relative overflow-hidden border px-4 py-1.5 text-xs uppercase tracking-[1.5px] transition-colors duration-200 hover:cursor-pointer lg:px-6 lg:py-3 lg:text-sm ${tab === "offers" ? "border-[#16412d] bg-[#16412d] text-white" : "border-[#D8CEC0] text-[#2C2C2C] hover:border-[#16412d] hover:text-[#16412d]"}`}>Exclusive Offers</button>
+      <button type="button" role="tab" aria-selected={tab === "prices"} onClick={() => setTab("prices")} className={`relative overflow-hidden border px-4 py-1.5 text-xs uppercase tracking-[1.5px] transition-colors duration-200 hover:cursor-pointer lg:px-6 lg:py-3 lg:text-sm ${tab === "prices" ? "border-[#16412d] bg-[#16412d] text-white" : "border-[#D8CEC0] text-[#2C2C2C] hover:border-[#16412d] hover:text-[#16412d]"}`}>Treatment Prices</button>
     </div>
-    <div className="mt-16" role="tabpanel">{tab === "plans" ? <MembershipPlans/> : <ExclusiveOffers/>}</div>
+    <div className="mt-16" role="tabpanel">{tab === "plans" ? <MembershipPlans/> : <TreatmentPrices/>}</div>
     <WhyChooseUs/>
     <Faqs/>
   </div>;

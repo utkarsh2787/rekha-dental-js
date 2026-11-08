@@ -252,7 +252,6 @@ export function AcademyPage() {
                         <p className="text-[11px] font-extrabold uppercase tracking-wide text-[#b89b5e]">Starting at</p>
                         <div className="flex items-center gap-2">
                           <p className="text-xl font-bold text-[#16412d]">{course.price}</p>
-                          <p className="text-sm text-gray-400 line-through">{course.oldPrice}</p>
                         </div>
                       </div>
                       <a href={`https://wa.me/918130406405?text=${message}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 rounded-lg bg-[#16412d] px-3 py-2.5 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:bg-[#093528] active:scale-95">
